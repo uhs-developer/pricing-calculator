@@ -108,11 +108,58 @@ const AdminManagement = () => {
   ];
 
   const handleEdit = (item: any) => {
-    toast({ title: "Edit functionality", description: "Edit feature would open here" });
+    console.log('Edit item:', item);
+    toast({
+      title: "Edit Feature",
+      description: "Edit functionality will be available with backend integration.",
+    });
   };
 
   const handleDelete = (item: any) => {
-    toast({ title: "Delete confirmation", description: "Delete confirmation would appear here" });
+    console.log('Delete item:', item);
+    toast({
+      title: "Delete Feature", 
+      description: "Delete functionality will be available with backend integration.",
+    });
+  };
+
+  const handleImport = async (data: any[], type: string) => {
+    try {
+      // Mock import implementation
+      console.log(`Importing ${data.length} ${type}:`, data);
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Import Successful",
+        description: `Successfully imported ${data.length} ${type}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Import Failed",
+        description: "An error occurred during import.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExport = (format: 'csv' | 'excel' | 'json', type: string) => {
+    // Mock export implementation
+    console.log(`Exporting ${type} as ${format}`);
+    
+    toast({
+      title: "Export Started",
+      description: `Exporting ${type} as ${format.toUpperCase()}...`,
+    });
+    
+    // Simulate file download
+    setTimeout(() => {
+      toast({
+        title: "Export Complete",
+        description: `${type} exported successfully.`,
+      });
+    }, 2000);
   };
 
   const handleWizardComplete = (data: any) => {
@@ -166,10 +213,14 @@ const AdminManagement = () => {
               columns={productColumns}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onImport={(data) => handleImport(data, 'products')}
+              onExport={(format) => handleExport(format, 'products')}
+              dataType="products"
               selectable={true}
               searchable={true}
               filterable={true}
               exportable={true}
+              importable={true}
             />
           </TabsContent>
 
@@ -190,10 +241,14 @@ const AdminManagement = () => {
               columns={packageColumns}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onImport={(data) => handleImport(data, 'packages')}
+              onExport={(format) => handleExport(format, 'packages')}
+              dataType="packages"
               selectable={true}
               searchable={true}
               filterable={true}
               exportable={true}
+              importable={true}
             />
           </TabsContent>
 
@@ -258,10 +313,14 @@ const AdminManagement = () => {
               columns={userColumns}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onImport={(data) => handleImport(data, 'users')}
+              onExport={(format) => handleExport(format, 'users')}
+              dataType="users"
               selectable={true}
               searchable={true}
               filterable={true}
               exportable={true}
+              importable={true}
             />
           </TabsContent>
 

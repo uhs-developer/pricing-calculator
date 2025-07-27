@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { MobileNav } from '@/components/ui/mobile-nav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -80,20 +81,23 @@ const LandingPage = () => {
               </div>
               <span className="text-xl font-bold">PriceCalc Pro</span>
             </div>
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link to="/calculator" className="text-muted-foreground hover:text-foreground transition-quick">
-                Calculator
-              </Link>
-              <Link to="#features" className="text-muted-foreground hover:text-foreground transition-quick">
-                Features
-              </Link>
-              <Link to="#contact" className="text-muted-foreground hover:text-foreground transition-quick">
-                Contact
-              </Link>
-              <Link to="/auth">
-                <Button variant="outline" size="sm">Login</Button>
-              </Link>
-            </nav>
+            <div className="flex items-center gap-4">
+              <nav className="hidden md:flex items-center space-x-6">
+                <Link to="/calculator" className="text-muted-foreground hover:text-foreground transition-quick">
+                  Calculator
+                </Link>
+                <Link to="#features" className="text-muted-foreground hover:text-foreground transition-quick">
+                  Features
+                </Link>
+                <Link to="#contact" className="text-muted-foreground hover:text-foreground transition-quick">
+                  Contact
+                </Link>
+                <Link to="/auth">
+                  <Button variant="outline" size="sm">Login</Button>
+                </Link>
+              </nav>
+              <MobileNav />
+            </div>
           </div>
         </div>
       </header>
@@ -168,12 +172,21 @@ const LandingPage = () => {
                   </Select>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button onClick={handleQuickCalculate} className="flex-1 btn-primary">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={handleQuickCalculate} 
+                    className="mobile-button btn-primary hover-scale animate-fade-in"
+                    size="lg"
+                  >
                     <Calculator className="h-4 w-4 mr-2" />
                     Calculate Pricing
                   </Button>
-                  <Button variant="outline" onClick={() => navigate('/calculator')}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/calculator')}
+                    className="mobile-button hover-scale animate-fade-in"
+                    size="lg"
+                  >
                     Detailed Calculator
                   </Button>
                 </div>
@@ -212,9 +225,13 @@ const LandingPage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="card-hover border-0 shadow-custom-md">
+              <Card 
+                key={index} 
+                className="card-hover border-0 shadow-custom-md animate-fade-in hover-glow"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <CardHeader className="text-center">
-                  <div className="bg-primary-light p-3 rounded-lg w-fit mx-auto mb-4">
+                  <div className="bg-primary-light p-3 rounded-lg w-fit mx-auto mb-4 hover-scale">
                     <div className="text-primary">
                       {feature.icon}
                     </div>
@@ -305,11 +322,21 @@ const LandingPage = () => {
             Start creating professional quotations today. No setup fees, no long-term contracts.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" onClick={() => navigate('/calculator')}>
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              onClick={() => navigate('/calculator')}
+              className="mobile-button hover-scale animate-bounce-in"
+            >
               <Calculator className="h-5 w-5 mr-2" />
               Try Calculator Free
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-primary mobile-button hover-scale animate-bounce-in"
+              style={{ animationDelay: '0.2s' }}
+            >
               <Mail className="h-5 w-5 mr-2" />
               Request Demo
             </Button>

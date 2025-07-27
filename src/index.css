@@ -188,4 +188,53 @@
   .hero-bg {
     background: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 70%) 100%);
   }
+
+  /* Animation utilities */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-custom-lg;
+  }
+  
+  .animate-on-scroll {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  /* Mobile optimizations */
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .mobile-button {
+    @apply mobile-touch-target px-6 py-3 text-base font-medium;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+  
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-primary border-t-transparent;
+  }
+
+  /* Import/Export indicators */
+  .upload-zone {
+    @apply border-2 border-dashed border-muted-foreground/25 rounded-lg transition-colors duration-200;
+  }
+  
+  .upload-zone.active {
+    @apply border-primary bg-primary-light/50;
+  }
+
+  /* Responsive animations - disable on mobile for performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

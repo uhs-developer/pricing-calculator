@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImportExport } from '@/components/ui/import-export';
 import { 
   Search, 
   ChevronUp, 
@@ -14,7 +15,8 @@ import {
   Trash2,
   Edit,
   MoreHorizontal,
-  Eye
+  Eye,
+  Upload
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -39,11 +41,15 @@ interface AdvancedTableProps {
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
   onView?: (row: any) => void;
+  onImport?: (data: any[]) => Promise<void>;
+  onExport?: (format: 'csv' | 'excel' | 'json') => void;
   onBulkAction?: (action: string, selectedRows: any[]) => void;
   selectable?: boolean;
   searchable?: boolean;
   filterable?: boolean;
   exportable?: boolean;
+  importable?: boolean;
+  dataType?: 'products' | 'packages' | 'users';
   pageSize?: number;
 }
 
@@ -54,11 +60,15 @@ const AdvancedTable: React.FC<AdvancedTableProps> = ({
   onEdit,
   onDelete,
   onView,
+  onImport,
+  onExport,
   onBulkAction,
   selectable = false,
   searchable = true,
   filterable = true,
   exportable = true,
+  importable = true,
+  dataType = 'products',
   pageSize = 10
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -227,6 +237,14 @@ const AdvancedTable: React.FC<AdvancedTableProps> = ({
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
+          )}
+          
+          {(importable || exportable) && onImport && onExport && (
+            <ImportExport
+              onImport={onImport}
+              onExport={onExport}
+              dataType={dataType}
+            />
           )}
         </div>
       </div>
