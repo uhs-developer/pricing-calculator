@@ -31,7 +31,9 @@ const Auth = () => {
         name: 'Demo User',
         email: loginData.email,
         role: 'admin' as const,
-        permissions: ['read', 'write', 'delete']
+        permissions: ['read', 'write', 'delete'],
+        isActive: true,
+        createdAt: '2024-01-01'
       };
       
       dispatch({ type: 'SET_USER', payload: mockUser });

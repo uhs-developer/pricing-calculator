@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
   Settings, 
@@ -16,32 +17,107 @@ import {
   BarChart,
   Plus,
   Edit,
-  Trash2
+  Trash2,
+  Globe,
+  Shield
 } from 'lucide-react';
+import AdvancedTable from '@/components/admin/AdvancedTable';
+import FormWizard from '@/components/admin/FormWizard';
+import PackageBuilder from '@/components/admin/PackageBuilder';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import { Product, Package as PackageType, User, PricingRule } from '@/context/AppContext';
 
 const AdminManagement = () => {
   const navigate = useNavigate();
-  const { state } = useApp();
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    description: '',
-    category: '',
-    unit: 'project',
-    basePrice: '',
-    currency: 'USD'
-  });
+  const { state, dispatch } = useApp();
+  const { toast } = useToast();
+  const [showWizard, setShowWizard] = useState(false);
+  const [wizardType, setWizardType] = useState<'product' | 'package' | 'user'>('product');
 
-  const handleAddProduct = () => {
-    console.log('Adding product:', newProduct);
-    alert('Product added successfully!');
-    setNewProduct({
-      name: '',
-      description: '',
-      category: '',
-      unit: 'project',
-      basePrice: '',
-      currency: 'USD'
-    });
+  // Product table columns
+  const productColumns = [
+    { key: 'name', label: 'Name', sortable: true, filterable: true },
+    { key: 'category', label: 'Category', sortable: true, filterable: true },
+    { 
+      key: 'basePrice', 
+      label: 'Price', 
+      sortable: true,
+      render: (value: number) => <Badge variant="secondary">${value}</Badge>
+    },
+    { key: 'unit', label: 'Unit', sortable: true },
+    { 
+      key: 'isActive', 
+      label: 'Status',
+      render: (value: boolean) => (
+        <Badge variant={value ? 'default' : 'secondary'}>
+          {value ? 'Active' : 'Inactive'}
+        </Badge>
+      )
+    },
+    { 
+      key: 'revenue', 
+      label: 'Revenue', 
+      sortable: true,
+      render: (value: number) => <span className="font-medium">${value.toLocaleString()}</span>
+    }
+  ];
+
+  // Package table columns
+  const packageColumns = [
+    { key: 'name', label: 'Name', sortable: true, filterable: true },
+    { key: 'description', label: 'Description', filterable: true },
+    { 
+      key: 'discountValue', 
+      label: 'Discount',
+      render: (value: number, row: PackageType) => (
+        <Badge variant="outline">
+          {row.discountType === 'percentage' ? `${value}%` : `$${value}`}
+        </Badge>
+      )
+    },
+    { 
+      key: 'isActive', 
+      label: 'Status',
+      render: (value: boolean) => (
+        <Badge variant={value ? 'default' : 'secondary'}>
+          {value ? 'Active' : 'Inactive'}
+        </Badge>
+      )
+    }
+  ];
+
+  // User table columns
+  const userColumns = [
+    { key: 'name', label: 'Name', sortable: true, filterable: true },
+    { key: 'email', label: 'Email', sortable: true, filterable: true },
+    { 
+      key: 'role', 
+      label: 'Role', 
+      sortable: true,
+      render: (value: string) => <Badge variant="outline">{value}</Badge>
+    },
+    { 
+      key: 'isActive', 
+      label: 'Status',
+      render: (value: boolean) => (
+        <Badge variant={value ? 'default' : 'secondary'}>
+          {value ? 'Active' : 'Inactive'}
+        </Badge>
+      )
+    }
+  ];
+
+  const handleEdit = (item: any) => {
+    toast({ title: "Edit functionality", description: "Edit feature would open here" });
+  };
+
+  const handleDelete = (item: any) => {
+    toast({ title: "Delete confirmation", description: "Delete confirmation would appear here" });
+  };
+
+  const handleWizardComplete = (data: any) => {
+    toast({ title: "Success", description: `${wizardType} created successfully!` });
+    setShowWizard(false);
   };
 
   return (
@@ -75,166 +151,147 @@ const AdminManagement = () => {
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Add New Product */}
-              <Card className="shadow-custom-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-5 w-5" />
-                    Add New Product
-                  </CardTitle>
-                  <CardDescription>Create a new product or service</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="productName">Product Name</Label>
-                    <Input
-                      id="productName"
-                      value={newProduct.name}
-                      onChange={(e) => setNewProduct(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Enter product name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="productDescription">Description</Label>
-                    <Input
-                      id="productDescription"
-                      value={newProduct.description}
-                      onChange={(e) => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Product description"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <Input
-                        id="category"
-                        value={newProduct.category}
-                        onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
-                        placeholder="Web Development"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="basePrice">Base Price</Label>
-                      <Input
-                        id="basePrice"
-                        type="number"
-                        value={newProduct.basePrice}
-                        onChange={(e) => setNewProduct(prev => ({ ...prev, basePrice: e.target.value }))}
-                        placeholder="1000"
-                      />
-                    </div>
-                  </div>
-                  <Button onClick={handleAddProduct} className="w-full btn-primary">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Product
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Existing Products */}
-              <Card className="shadow-custom-lg">
-                <CardHeader>
-                  <CardTitle>Existing Products</CardTitle>
-                  <CardDescription>Manage your product catalog</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {state.products.map((product) => (
-                      <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{product.name}</h3>
-                          <p className="text-sm text-muted-foreground">{product.category}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="secondary">${product.basePrice}</Badge>
-                            <Badge variant="outline">{product.unit}</Badge>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Product Management</h2>
+                <p className="text-muted-foreground">Manage your product catalog and pricing</p>
+              </div>
+              <Button onClick={() => { setWizardType('product'); setShowWizard(true); }} className="btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Product
+              </Button>
             </div>
+            <AdvancedTable
+              data={state.products}
+              columns={productColumns}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              selectable={true}
+              searchable={true}
+              filterable={true}
+              exportable={true}
+            />
           </TabsContent>
 
           {/* Packages Tab */}
-          <TabsContent value="packages">
-            <Card className="shadow-custom-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Service Packages
-                </CardTitle>
-                <CardDescription>Create and manage service bundles</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center py-8">
-                <Package className="h-12 w-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
-                <p className="text-muted-foreground">Package management coming soon</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="packages" className="space-y-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Package Management</h2>
+                <p className="text-muted-foreground">Create and manage service bundles</p>
+              </div>
+              <Button onClick={() => { setWizardType('package'); setShowWizard(true); }} className="btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Package
+              </Button>
+            </div>
+            <AdvancedTable
+              data={state.packages}
+              columns={packageColumns}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              selectable={true}
+              searchable={true}
+              filterable={true}
+              exportable={true}
+            />
           </TabsContent>
 
           {/* Pricing Rules Tab */}
-          <TabsContent value="pricing">
-            <Card className="shadow-custom-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Pricing Rules & Multipliers
-                </CardTitle>
-                <CardDescription>Configure pricing logic and regional adjustments</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center py-8">
-                <DollarSign className="h-12 w-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
-                <p className="text-muted-foreground">Pricing rules management coming soon</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="pricing" className="space-y-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Pricing Rules</h2>
+                <p className="text-muted-foreground">Configure dynamic pricing and multipliers</p>
+              </div>
+              <Button className="btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Rule
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {state.pricingRules.map(rule => (
+                <Card key={rule.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      {rule.name}
+                      <Badge variant={rule.isActive ? 'default' : 'secondary'}>
+                        {rule.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      {rule.type.replace('_', ' ').toUpperCase()} • {rule.multiplier}x multiplier
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Priority: {rule.priority}</span>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(rule)}>
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleDelete(rule)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
           {/* Users Tab */}
-          <TabsContent value="users">
-            <Card className="shadow-custom-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  User Management
-                </CardTitle>
-                <CardDescription>Manage user accounts and permissions</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center py-8">
-                <Users className="h-12 w-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
-                <p className="text-muted-foreground">User management coming soon</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="users" className="space-y-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">User Management</h2>
+                <p className="text-muted-foreground">Manage team members and permissions</p>
+              </div>
+              <Button onClick={() => { setWizardType('user'); setShowWizard(true); }} className="btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Add User
+              </Button>
+            </div>
+            <AdvancedTable
+              data={state.users}
+              columns={userColumns}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              selectable={true}
+              searchable={true}
+              filterable={true}
+              exportable={true}
+            />
           </TabsContent>
 
           {/* Reports Tab */}
           <TabsContent value="reports">
-            <Card className="shadow-custom-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart className="h-5 w-5" />
-                  Analytics & Reports
-                </CardTitle>
-                <CardDescription>View system analytics and generate reports</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center py-8">
-                <BarChart className="h-12 w-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
-                <p className="text-muted-foreground">Analytics dashboard coming soon</p>
-              </CardContent>
-            </Card>
+            <AnalyticsDashboard />
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Form Wizard Modal */}
+      {showWizard && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <FormWizard
+              title={`Create New ${wizardType.charAt(0).toUpperCase() + wizardType.slice(1)}`}
+              steps={[
+                {
+                  id: 'info',
+                  title: 'Basic Information',
+                  description: `Enter ${wizardType} details`,
+                  component: wizardType === 'package' ? <PackageBuilder /> : <div className="p-8 text-center">Form component for {wizardType}</div>
+                }
+              ]}
+              onComplete={handleWizardComplete}
+              onCancel={() => setShowWizard(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
